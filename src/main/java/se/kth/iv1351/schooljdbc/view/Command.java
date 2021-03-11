@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package se.kth.iv1351.bankjdbc.view;
+package se.kth.iv1351.schooljdbc.view;
 
 /**
  * Defines all commands that can be performed by a user of the chat application.
@@ -31,7 +31,7 @@ public enum Command {
     /**
      * Creates a new account.
      */
-    NEW,
+    STUDENT,
     /**
      * Lists all existing accounts.
      */
@@ -39,22 +39,12 @@ public enum Command {
     /**
      * Deletes the specified account.
      */
-    DELETE,
+    RENT,
     /**
      * Deposits the specified amount to the specified account
      */
-    DEPOSIT,
-    /**
-     * Withdraws the specified amount from the specified account
-     */
-    WITHDRAW,
-    /**
-     * Lists the balance of the specified account.
-     */
-    BALANCE,
-    /**
-     * Lists all commands.
-     */
+    TERMINATE,
+
     HELP,
     /**
      * Leave the chat application.

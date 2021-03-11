@@ -22,13 +22,16 @@
  * THE SOFTWARE.
  */
 
-package se.kth.iv1351.bankjdbc.view;
+package se.kth.iv1351.schooljdbc.view;
 
 import java.util.List;
 import java.util.Scanner;
 
-import se.kth.iv1351.bankjdbc.controller.Controller;
-import se.kth.iv1351.bankjdbc.model.AccountDTO;
+import se.kth.iv1351.schooljdbc.controller.Controller;
+import se.kth.iv1351.schooljdbc.model.Instrument;
+import se.kth.iv1351.schooljdbc.model.Student;
+
+import static java.lang.Integer.parseInt;
 
 /**
  * Reads and interprets user commands. This command interpreter is blocking, the user
@@ -39,6 +42,7 @@ public class BlockingInterpreter {
     private final Scanner console = new Scanner(System.in);
     private Controller ctrl;
     private boolean keepReceivingCmds = false;
+    Student user;
 
     /**
      * Creates a new instance that will use the specified controller for all operations.
@@ -78,41 +82,38 @@ public class BlockingInterpreter {
                     case QUIT:
                         keepReceivingCmds = false;
                         break;
-                    case NEW:
-                        ctrl.createAccount(cmdLine.getParameter(0));
+                    case STUDENT:
+                        Student student = ctrl.getStudent(parseInt(cmdLine.getParameter(0)));
+                        if (student != null){
+                            this.user = student;
+                            System.out.println("User set to:" + user.getStudentID());
+                        }else {
+                            System.out.println("User not found");
+                        }
                         break;
-                    case DELETE:
-                        ctrl.deleteAccount(cmdLine.getParameter(0));
+                    case RENT:
+                        if (user != null) {
+                            ctrl.rentInstrument(user, parseInt(cmdLine.getParameter(0)), cmdLine.getParameter(1)
+                                    , parseInt(cmdLine.getParameter(2)));
+                        }else{
+                            System.out.println("User not selected");
+                        }
                         break;
                     case LIST:
-                        List<? extends AccountDTO> accounts = null;
-                        if (cmdLine.getParameter(0).equals("")) {
-                            accounts = ctrl.getAllAccounts();
-                        } else {
-                            accounts = ctrl.getAccountsForHolder(cmdLine.getParameter(0));
-                        }
-                        for (AccountDTO account : accounts) {
-                            System.out.println("acct no: " + account.getAccountNo() + ", "
-                                             + "holder: " + account.getHolderName() + ", "
-                                             + "balance: " + account.getBalance());
+                        List<Instrument> instruments = null;
+                        instruments = ctrl.getInstruments(cmdLine.getParameter(0));
+                        for (Instrument instrument  : instruments) {
+                            System.out.println("id: " + instrument.getId() + ", "
+                                             + "fee: " + instrument.getFee() + ", "
+                                             + "brand: " + instrument.getBrand()
+                                             + ", " + "Available; " + instrument.isAvailable());
                         }
                         break;
-                    case DEPOSIT:
-                        ctrl.deposit(cmdLine.getParameter(0), 
-                                     Integer.parseInt(cmdLine.getParameter(1)));
+                    case TERMINATE:
+                        ctrl.terminateRental(user, parseInt(cmdLine.getParameter(0)), parseInt(cmdLine.getParameter(1)));
+                        System.out.println("Rental terminated");
                         break;
-                    case WITHDRAW:
-                        ctrl.withdraw(cmdLine.getParameter(0), 
-                                      Integer.parseInt(cmdLine.getParameter(1)));
-                        break;
-                    case BALANCE:
-                        AccountDTO acct = ctrl.getAccount(cmdLine.getParameter(0));
-                        if (acct != null) {
-                            System.out.println(acct.getBalance());
-                        } else {
-                            System.out.println("No such account");
-                        }
-                        break;
+
                     default:
                         System.out.println("illegal command");
                 }
